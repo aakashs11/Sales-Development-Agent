@@ -116,29 +116,24 @@ def load_leads_dataset():
     Adjust the file paths as per your system.
     """
     try:
-        #filtered leads and cleaned leads are in the same directory as this script
-        # Adjust the path as necessary
-        path_merged = "landing_page_leads.csv"
-        path_cleaned = "cleaned_leads.csv"
+        # Get the absolute directory path where this script (app.py) is located
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+
+        # Build the full paths to your CSV files
+        path_merged = os.path.join(base_dir, "landing_page_leads.csv")
+        path_cleaned = os.path.join(base_dir, "cleaned_leads.csv")
+
         df_master = pd.read_csv(path_merged)
         df_cleaned_leads = pd.read_csv(path_cleaned)
-        print(df_cleaned_leads.head())
-        print(df_master.head())
-        # If needed, rename columns so that 'Lead Number_x' is consistent:
-        if (
-            "Lead Number_x" not in df_master.columns
-            and "Lead Number" in df_master.columns
-        ):
-            df_master = df_master.rename(columns={"Lead Number": "Lead Number_x"})
 
+        st.info("CSV files loaded successfully.")
         return df_master, df_cleaned_leads
     except FileNotFoundError as e:
-        # st.error(f"File not found: {e}")
+        st.error(f"File not found: {e}")
         st.stop()
     except Exception as e:
-        # st.error(f"Unexpected error loading data: {e}")
+        st.error(f"Unexpected error loading data: {e}")
         st.stop()
-
 
 df_master, df_cleaned_leads = load_leads_dataset()
 df_leads = df_master  # For email drafting
