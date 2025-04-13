@@ -7,12 +7,18 @@ from openai import OpenAI
 from pandasai import SmartDataframe
 from pandasai.llm import OpenAI as PandasAI_OpenAI
 import os
+# Robust API key getter: handles both local and Streamlit Cloud
+def get_api_key():
+    return os.getenv("OPENAI_API_KEY") or st.secrets.get("OPENAI_API_KEY", None)
 
-# Try system env variable first, fall back to Streamlit Cloud secrets
-api_key = os.getenv("OPENAI_API_KEY") or st.secrets["OPENAI_API_KEY"]
+api_key = get_api_key()
+
+if not api_key:
+    st.error("OpenAI API key not found in environment or Streamlit secrets.")
+    st.stop()
+
 client = OpenAI(api_key=api_key)
-
-llm_pandasai = PandasAI_OpenAI(model="gpt-4o", temperature=0)
+llm_pandasai = PandasAI_OpenAI(api_token=api_key, model="gpt-4o", temperature=0)
 import matplotlib.pyplot as plt
 import pandas as pd
 
