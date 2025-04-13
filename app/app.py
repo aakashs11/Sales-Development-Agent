@@ -409,12 +409,8 @@ def generate_sales_email(
 
     email_body = {""}
 
-    if "Lead Number_x" not in dataframe_leads.columns:
-        # st.error("Column 'Lead Number_x' not found in the leads data. Possibly rename or adjust.")
-        return "Error: 'Lead Number_x' column not found. Cannot draft email."
-
     # Filter by lead number
-    lead_data = dataframe_leads[dataframe_leads["Lead Number_x"] == int(lead_number)]
+    lead_data = dataframe_leads[dataframe_leads["Lead Number"] == int(lead_number)]
     if lead_data.empty:
         return f"Error: Lead with number {lead_number} not found."
 
@@ -763,7 +759,9 @@ with col2:
             st.session_state.current_dataframe is not None
             and not st.session_state.current_dataframe.empty
         ):
-            st.dataframe(st.session_state.current_dataframe)
+            # if it is instance of dataframe, display it
+            if isinstance(st.session_state.current_dataframe, pd.DataFrame):
+                st.dataframe(st.session_state.current_dataframe)
         else:
             st.info("No lead data to display yet. Ask me to find leads!")
 
