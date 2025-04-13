@@ -2,3 +2,4 @@
 cache/
 .embedding_model/
 .embedding_model
+.streamlit
