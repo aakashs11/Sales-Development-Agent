@@ -3,7 +3,7 @@ st.set_page_config(page_title="Debugging App", layout="wide")
 st.info("🟢 App is starting...")
 import json
 import os
-
+from pathlib import Path
 import pandas as pd
 import streamlit as st
 from openai import OpenAI
@@ -120,11 +120,10 @@ def load_leads_dataset():
         base_dir = os.path.dirname(os.path.abspath(__file__))
 
         # Build the full paths to your CSV files
-        path_merged = os.path.join(base_dir, "landing_page_leads.csv")
-        path_cleaned = os.path.join(base_dir, "cleaned_leads.csv")
+        current_dir = Path(__file__).parent
+        df_master = pd.read_csv(current_dir / "landing_page_leads.csv")
+        df_cleaned_leads = pd.read_csv(current_dir / "cleaned_leads.csv")
 
-        df_master = pd.read_csv(path_merged)
-        df_cleaned_leads = pd.read_csv(path_cleaned)
 
         st.info("CSV files loaded successfully.")
         return df_master, df_cleaned_leads
