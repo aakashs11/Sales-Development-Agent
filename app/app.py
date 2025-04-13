@@ -1,3 +1,6 @@
+import streamlit as st
+st.set_page_config(page_title="Debugging App", layout="wide")
+st.info("🟢 App is starting...")
 import json
 import os
 
