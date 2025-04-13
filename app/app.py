@@ -1,6 +1,12 @@
 import streamlit as st
-st.set_page_config(page_title="Debugging App", layout="wide")
-st.info("🟢 App is starting...")
+
+########################################
+# Streamlit Page Config
+########################################
+st.set_page_config(page_title="Sales Development Representative Agent", layout="wide")
+st.title(" SDR AI Assistant")
+st.caption("Your AI assistant for querying leads and drafting emails.")
+
 import json
 import os
 from pathlib import Path
@@ -24,13 +30,6 @@ client = OpenAI(api_key=api_key)
 llm_pandasai = PandasAI_OpenAI(api_token=api_key, model="gpt-4o", temperature=0)
 import matplotlib.pyplot as plt
 import pandas as pd
-
-########################################
-# Streamlit Page Config
-########################################
-st.set_page_config(page_title="Sales Development Representative Agent", layout="wide")
-st.title(" SDR AI Assistant")
-st.caption("Your AI assistant for querying leads and drafting emails.")
 
 ########################################
 # Session State Variables for UI Components
