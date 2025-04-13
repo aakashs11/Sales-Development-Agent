@@ -16,6 +16,19 @@ from openai import OpenAI
 from pandasai import SmartDataframe
 from pandasai.llm import OpenAI as PandasAI_OpenAI
 import os
+import logging
+
+logging.basicConfig(
+    level=logging.DEBUG,  # Set to DEBUG to capture all messages
+    format="%(asctime)s [%(levelname)s] %(message)s",
+    handlers=[
+        logging.FileHandler("app_debug.log"),  # Write to a file
+        logging.StreamHandler()  # Also output to the console
+    ]
+)
+
+logging.debug("Debugging initialized.")
+
 # Robust API key getter: handles both local and Streamlit Cloud
 def get_api_key():
     return os.getenv("OPENAI_API_KEY") or st.secrets.get("OPENAI_API_KEY", None)
@@ -122,7 +135,7 @@ def load_leads_dataset():
         current_dir = Path(__file__).parent
         df_master = pd.read_csv(current_dir / "landing_page_leads.csv")
         df_cleaned_leads = pd.read_csv(current_dir / "cleaned_leads.csv")
-
+        logging.debug("CSV files loaded successfully.")
 
         st.info("CSV files loaded successfully.")
         return df_master, df_cleaned_leads
@@ -605,6 +618,7 @@ def handle_sdr_conversation(user_message: str, session_memory: dict) -> str:
         )
         response_msg = response.choices[0].message
         # Save assistant's response or tool-calling attempt in memory:
+        logging.debug(f"LLM response received: {response_msg}")
         session_memory["sdr"]["messages"].append(response_msg)
 
         # Step 2: check for tool calls
