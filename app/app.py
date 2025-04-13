@@ -6,8 +6,12 @@ import streamlit as st
 from openai import OpenAI
 from pandasai import SmartDataframe
 from pandasai.llm import OpenAI as PandasAI_OpenAI
+import os
 
-client = OpenAI()
+# Try system env variable first, fall back to Streamlit Cloud secrets
+api_key = os.getenv("OPENAI_API_KEY") or st.secrets["OPENAI_API_KEY"]
+client = OpenAI(api_key=api_key)
+
 llm_pandasai = PandasAI_OpenAI(model="gpt-4o", temperature=0)
 import matplotlib.pyplot as plt
 import pandas as pd
