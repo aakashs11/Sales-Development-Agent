@@ -4,6 +4,12 @@
 
 This repository contains a Sales Development Representative (SDR) AI Assistant that helps sales teams analyze lead data, query leads based on various criteria, and draft personalized sales emails. The system uses OpenAI's language models to process natural language queries and generate appropriate responses.
 
+## Steps to run
+
+1. Create a venv
+2. Install dependencies from requirements.txt
+3. Run the app.py in app folder using ```streamlit run app.py```
+
 ## Repository Structure
 
 ```
