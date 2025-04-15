@@ -2,7 +2,7 @@
 
 ## Upcoming Enhancements
 1. **Documentation** : Prompt Engineering, User Flows, Evaluation
-2. **Automated Evals** : Integrate promptfoo and GRAD-SUM[https://www.google.com/url?sa=t&source=web&rct=j&opi=89978449&url=https://arxiv.org/abs/2407.12865&ved=2ahUKEwjv6u-r0tmMAxX2TGwGHfbqLcoQFnoECAoQAQ&usg=AOvVaw0aZzCXoHtldny7jrj0SyzP] for optimizing prompt performance.
+2. **Automated Evals** : Assess [promptfoo](https://github.com/promptfoo/promptfoo), [GRAD-SUM](https://www.google.com/url?sa=t&source=web&rct=j&opi=89978449&url=https://arxiv.org/abs/2407.12865&ved=2ahUKEwjv6u-r0tmMAxX2TGwGHfbqLcoQFnoECAoQAQ&usg=AOvVaw0aZzCXoHtldny7jrj0SyzP), [NeMo](https://github.com/NVIDIA/NeMo) for optimizing prompt performance.
 
 ## Project Overview
 
