@@ -1,5 +1,9 @@
 # Sales Agent - SDR AI Assistant
 
+## Upcoming Enhancements
+1. **Documentation** : Prompt Engineering, User Flows, Evaluation
+2. **Automated Evals** : Integrate promptfoo and GRAD-SUM[https://www.google.com/url?sa=t&source=web&rct=j&opi=89978449&url=https://arxiv.org/abs/2407.12865&ved=2ahUKEwjv6u-r0tmMAxX2TGwGHfbqLcoQFnoECAoQAQ&usg=AOvVaw0aZzCXoHtldny7jrj0SyzP] for optimizing prompt performance.
+
 ## Project Overview
 
 This repository contains a Sales Development Representative (SDR) AI Assistant that helps sales teams analyze lead data, query leads based on various criteria, and draft personalized sales emails. The system uses OpenAI's language models to process natural language queries and generate appropriate responses.
