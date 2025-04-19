@@ -23,15 +23,17 @@ logging.basicConfig(
     format="%(asctime)s [%(levelname)s] %(message)s",
     handlers=[
         logging.FileHandler("app_debug.log"),  # Write to a file
-        logging.StreamHandler()  # Also output to the console
-    ]
+        logging.StreamHandler(),  # Also output to the console
+    ],
 )
 
 logging.debug("Debugging initialized.")
 
+
 # Robust API key getter: handles both local and Streamlit Cloud
 def get_api_key():
     return os.getenv("OPENAI_API_KEY") or st.secrets.get("OPENAI_API_KEY", None)
+
 
 api_key = get_api_key()
 
@@ -145,6 +147,7 @@ def load_leads_dataset():
     except Exception as e:
         st.error(f"Unexpected error loading data: {e}")
         st.stop()
+
 
 df_master, df_cleaned_leads = load_leads_dataset()
 df_leads = df_master  # For email drafting
@@ -406,7 +409,6 @@ def generate_sales_email(
     agent_company = "Tech Solutions"  # Placeholder for the agent's company
     agent_contact_information = "jane.doe@xyz.com"
 
-
     email_body = {""}
 
     # Filter by lead number
@@ -555,8 +557,10 @@ def handle_tool_call(tool_call):
         result = run_query_on_leads(dataframe, query_str)
         # add result to session state for display
         st.session_state.current_dataframe = result
-        #send only lead number, lead stage, city and company name to the assistant to save tokens
-        result = result[["Lead Number", "Lead Stage", "City", "Company","Lead Source", "Email"]]
+        # send only lead number, lead stage, city and company name to the assistant to save tokens
+        result = result[
+            ["Lead Number", "Lead Stage", "City", "Company", "Lead Source", "Email"]
+        ]
 
         if isinstance(result, pd.DataFrame):
             return result.to_dict(orient="records")
@@ -576,9 +580,7 @@ def handle_tool_call(tool_call):
         product = arguments["product"]
         first_name = arguments["first_name"]
         last_name = arguments["last_name"]
-        result = generate_sales_email(
-            lead_number, product, first_name, last_name
-        )
+        result = generate_sales_email(lead_number, product, first_name, last_name)
         return result
     elif function_name == "send_email":
         print("Sending email:", arguments)
@@ -642,7 +644,8 @@ def handle_sdr_conversation(user_message: str, session_memory: dict) -> str:
 
             # Step 3: follow-up call with the tool results in memory
             followup = client.chat.completions.create(
-                messages=session_memory["sdr"]["messages"], model="o3-mini",  # or "gpt-4o-mini"
+                messages=session_memory["sdr"]["messages"],
+                model="o3-mini",  # or "gpt-4o-mini"
             )
             final_msg = followup.choices[0].message.content
             session_memory["sdr"]["messages"].append(
@@ -702,7 +705,9 @@ with col1:
             st.markdown(user_input)
 
         with st.spinner("Thinking..."):
-            assistant_answer = handle_sdr_conversation(user_input, st.session_state.memory)
+            assistant_answer = handle_sdr_conversation(
+                user_input, st.session_state.memory
+            )
 
         # Display final assistant response
         st.session_state.messages.append(
@@ -715,21 +720,24 @@ with col1:
     # ----------------------------
     if st.button("Save Conversation"):
         import time
+
         # Convert all message objects to serializable dictionaries
         def serialize_message(message):
-            if hasattr(message, 'model_dump'):  # For OpenAI SDK objects
+            if hasattr(message, "model_dump"):  # For OpenAI SDK objects
                 return message.model_dump()
             elif isinstance(message, dict):
                 return message
             else:
                 raise TypeError(f"Unsupported message type: {type(message)}")
-            
-        save_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "saved_conversations")
+
+        save_dir = os.path.join(
+            os.path.dirname(os.path.abspath(__file__)), "saved_conversations"
+        )
         os.makedirs(save_dir, exist_ok=True)
         # Create a timestamped filename
         timestamp_str = time.strftime("%Y%m%d_%H%M%S")
         filename = os.path.join(save_dir, f"{timestamp_str}_conversation.json")
-        
+
         raw_log = st.session_state.memory["sdr"]["messages"]
         full_log = [serialize_message(msg) for msg in raw_log]
 
