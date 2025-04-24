@@ -12,7 +12,7 @@ def function_to_schema(func,params_model):
     """
     schema = params_model.model_json_schema()
     schema["additionalProperties"] = False 
-
+    print(func)
     return {
         "type": "function",
         "name": func.__name__.strip(),

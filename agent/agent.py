@@ -12,6 +12,10 @@ class Agent:
     def response(self, input_data):
         # Generate a response based on input data
         self.memory.append({"role": "user", "content": input_data})
+        tool_output = None
+        thoughts = []
+        actions = []
+        
         api_response_1= self.client.responses.create(
             model="gpt-4.1",
             input=self.memory,
@@ -25,39 +29,50 @@ class Agent:
             logging.debug("Block type: %s", block.type)
 
             if block.type == "message":
-
-                logging.debug("Assistant message: %s", block.content[0].text)
                 response_text = api_response_1.output_text
-                # Process the response text
                 self.memory.append({"role": "assistant", "content": response_text})
-                print(block.content[0].text)
+                thoughts.append("Generated response without tool call.")
                 break
 
 
             elif block.type == "function_call":
-
-                logging.debug("Function call: %s, args: %s", block.name, block.arguments)
-                args_dict = json.loads(block.arguments)  # <-- Parse JSON string to dict
-                tool_result = self.act(block.name, args_dict)                                       
+                args_dict = json.loads(block.arguments)
+                tool_result = self.act(block.name, args_dict)
+                tool_output = tool_result
+                actions.append({
+                    "type": "function_call",
+                    "tool": block.name,
+                    "arguments": args_dict
+                })
                 self.memory.append({
                     "type": "function_call",
                     "call_id": block.call_id,
                     "name": block.name,
                     "arguments": block.arguments
                 })
-                # Now append the output
                 self.memory.append({
                     "type": "function_call_output",
                     "call_id": block.call_id,
                     "output": str(tool_result)
                 })
+
         api_response_2 = self.client.responses.create(
             model="gpt-4o",
             input=self.memory,
         )
         response_text = api_response_2.output_text
                     
-        return response_text
+        return {
+            "response": response_text,
+            "thoughts": thoughts,
+            "actions": actions,
+            "tool_output": tool_output,
+            "state": {
+                "current_agent": self.name
+            },
+            "metadata": {},
+            "error": None
+        }
 
     def act(self, name, args):
         logging.debug("Acting with tool: %s, args: %s", name, args)

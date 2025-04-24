@@ -3,3 +3,5 @@ cache/
 .embedding_model/
 .embedding_model
 .streamlit/secrets.toml
+.__pycache__/
+.pytest_cache/
