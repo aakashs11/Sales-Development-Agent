@@ -1,10 +1,14 @@
 import logging
 import json
 class Agent:
-    def __init__(self, name, client, developer_instructions, tool_schemas=None, tool_models=None, tools=None):
+    def __init__(self, name, client, developer_instructions, tool_schemas=None, tool_models=None, tools=None, memory=None):
         self.name = name
         self.client = client
-        self.memory = [{"role": "developer", "content": developer_instructions}]
+        if memory and len(memory) > 0:
+            self.memory = memory
+        else:
+            self.memory = [{"role": "developer", "content": developer_instructions}]
+
         self.tools = tools if tools is not None else {}  
         self.tool_schemas = tool_schemas if tool_schemas is not None else []
         self.tool_models = tool_models if tool_models is not None else {}
@@ -56,13 +60,14 @@ class Agent:
                     "output": str(tool_result)
                 })
 
-        api_response_2 = self.client.responses.create(
-            model="gpt-4o",
-            input=self.memory,
-        )
-        response_text = api_response_2.output_text
+                api_response_2 = self.client.responses.create(
+                    model="gpt-4o",
+                    input=self.memory,
+                )
+                response_text = api_response_2.output_text
                     
         return {
+            "memory": self.memory,
             "response": response_text,
             "thoughts": thoughts,
             "actions": actions,
@@ -71,7 +76,7 @@ class Agent:
                 "current_agent": self.name
             },
             "metadata": {},
-            "error": None
+            "error": None,
         }
 
     def act(self, name, args):

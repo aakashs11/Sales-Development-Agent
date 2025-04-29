@@ -10,35 +10,76 @@ logging.basicConfig(
     level=logging.INFO,  # or logging.DEBUG for more detail
     format='%(asctime)s - %(levelname)s - %(message)s'
 )
+#create a timestamp for the metadata
+import datetime
+timestamp = datetime.datetime.now().isoformat()
 
-#Initialize query tool
-df = pd.read_csv(r"cleaned_leads.csv")
-QUERY_DATAFRAME_TOOL_INSTRUCTIONS = open(r"prompts\query_dataframe_tool\prompt_v1.txt", encoding="utf-8").read()
-query_tool = QueryDataFrameTool(df, QUERY_DATAFRAME_TOOL_INSTRUCTIONS)
+def run(input_text, memory):
+    
+    output_schema ={
 
-#Tool definition
-tools = {"query_dataframe": query_tool.query_dataframe}
-tool_models = {"query_dataframe": QueryDataFrameInput}
-tool_schemas = [function_to_schema(query_tool.query_dataframe, QueryDataFrameInput)]
+        "response": "",
+        "thoughts": [],
+        "actions": [],
+        "tool_output": "",  # or a summary/preview
+        "state": {
+            "current_agent": "SalesAgent",
+        },
+        "metadata": {
+            "timestamp": timestamp,
+            "agent_version": "v1.2"
+        },
+        "error": None
+    }
+    
+    #Initialize query tool
+    df = pd.read_csv(r"cleaned_leads.csv")
+    QUERY_DATAFRAME_TOOL_INSTRUCTIONS = open(r"prompts\query_dataframe_tool\prompt_v1.txt", encoding="utf-8").read()
+    query_tool = QueryDataFrameTool(df, QUERY_DATAFRAME_TOOL_INSTRUCTIONS)
 
-#Agent initialization
-SDR_ASSISTANT_INSTRUCTIONS = open(r"prompts\sdr_agent\prompt_v1.txt", encoding="utf-8").read()
-agent = Agent("SalesAgent", client, SDR_ASSISTANT_INSTRUCTIONS, tool_schemas, tool_models, tools)
-agent_response = agent.response("can you show leads which are not converted from these leads?")
+    #Tool definition
+    tools = {"query_dataframe": query_tool.query_dataframe}
+    tool_models = {"query_dataframe": QueryDataFrameInput}
+    tool_schemas = [function_to_schema(query_tool.query_dataframe, QueryDataFrameInput)]
 
+    #Agent initialization
+    SDR_ASSISTANT_INSTRUCTIONS = open(r"prompts\sdr_agent\prompt_v1.txt", encoding="utf-8").read()
+    agent = Agent("SalesAgent", client, SDR_ASSISTANT_INSTRUCTIONS, tool_schemas, tool_models, tools, memory=memory)
+    agent_response = agent.response(input_text)
 
-output_schema ={
-    "response": "Here are the leads not converted...",
-    "thoughts": [],
-    "actions": [],
-    "tool_output": df.to_dict(orient="records"),  # or a summary/preview
-    "state": {
-        "current_agent": "SalesAgent",
-        "last_tool_used": "query_dataframe"
-    },
-    "metadata": {
-        "timestamp": "2025-04-24T12:34:56",
-        "agent_version": "v1.2"
-    },
-    "error": None
-}
+    response = agent_response.get("response", "No response generated.")
+    memory = agent_response.get("memory", [])
+    thoughts = agent_response.get("thoughts", [])
+    actions = agent_response.get("actions", [])
+    tool_output = agent_response.get("tool_output", "No tool output generated.")
+    state = agent_response.get("state", {})
+    metadata = agent_response.get("metadata", {})
+    error = agent_response.get("error", None)
+
+    # Log the response and other details
+    logging.info("Response: %s", response)
+    logging.info("memory: %s", agent_response.get("memory", []))
+    logging.info("Thoughts: %s", thoughts)
+    logging.info("Actions: %s", actions)
+    logging.info("Tool Output: %s", tool_output)
+    logging.info("State: %s", state)
+    logging.info("Metadata: %s", metadata)
+    logging.info("Error: %s", error)
+
+    # Return the final response
+    # Note: You might want to format the response as needed
+    # For example, you can return a dictionary or a string
+    # depending on your application's requirements.
+    # Here, we are returning a dictionary with the response and other details
+    return {
+        "response": response,
+        "memory": memory,
+        "thoughts": thoughts,
+        "actions": actions,
+        "tool_output": tool_output,
+        "state": state,
+        "metadata": metadata,
+        "error": error,
+        
+    }
+
